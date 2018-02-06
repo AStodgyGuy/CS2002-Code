@@ -74,7 +74,8 @@ int main(void)
 /**
  * Method to check for overflow
  */
-bool is_overflow(int first, int second, int third) {
+bool is_overflow(int first, int second, int third) 
+{
     if(first > MAX_INT || second > MAX_INT || third > MAX_INT) {
         return true;
     } else {
