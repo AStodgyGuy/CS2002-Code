@@ -25,12 +25,3 @@ int padocalc(int n)
     
     return arr[n];
 }
-
-void setglobalvars(int a, int b, int c)
-{
-    first = a;
-    second = b;
-    third = c;
-
-}
-
