@@ -1,9 +1,10 @@
+#include<limits.h>
 #include<stdio.h>
 #include<stdbool.h>
 #include"pado.h"
-#define MAX_INT 2147483647
 
-bool is_overflow(int first, int second, int third);
+
+bool is_overflow(long long value);
 bool get_valid_starting_inputs();
 bool get_valid_length_input();
 int num;
@@ -45,11 +46,14 @@ int main(void)
 }
 
 /**
- * Method to check for overflow
+ * Method which returns a boolean based on whether the input will overflow integer or not
  */
-bool is_overflow(int first, int second, int third) 
+bool is_overflow(long long value)
 {
-    if(first > MAX_INT || second > MAX_INT || third > MAX_INT) {
+    //minus the maximum representable value for int with the value passed into function
+    long long temp = value - INT_MAX;
+    //if greater than 0 then value is greater than INT_MAX hence overflow
+    if(temp > 0) {
         return true;
     } else {
         return false;
@@ -61,23 +65,34 @@ bool is_overflow(int first, int second, int third)
  */
 bool get_valid_starting_inputs() 
 {
+    long long tempfirst, tempsecond, tempthird;
     extern int first, second, third;
 
     //get starting inputs
     printf("Starting values? ");
-    if (scanf("%d,%d,%d", &first, &second, &third) != 3) {  //checking for valid input
+    if (scanf("%lld,%lld,%lld", &tempfirst, &tempsecond, &tempthird) != 3) {  //checking for valid input
         printf("Invalid input\n");
         return false;
     }
 
-    //check validated inputs for 0 values
-    if (first == 0 && second == 0 && third == 0) {
+    //check validated inputs for overflow values
+    if (is_overflow(tempfirst) || is_overflow(tempsecond) || is_overflow(tempthird)) {
+        printf("Overflow\n");
         return false;
     }
 
-    //check validated inputs for overflow values
-    if (is_overflow(first, second, third)) {
-        printf("Overflow\n");
+    first = (int) tempfirst;
+    second = (int) tempsecond;
+    third = (int) tempthird;
+
+    //check for negative values
+    if (first < 0 || second < 0 || third < 0) {
+        printf("Invalid input\n");
+        return false;
+    }
+
+    //check validated inputs for 0s
+    if (first == 0 && second == 0 && third == 0) {
         return false;
     }
 
@@ -97,7 +112,7 @@ bool get_valid_length_input()
     }
 
     //check overflow
-    if (is_overflow(num, 0, 0)) {
+    if (is_overflow(num)) {
         printf("Overflow\n");
         return false;
     }
