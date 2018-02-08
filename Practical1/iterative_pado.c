@@ -1,6 +1,9 @@
 #include<stdio.h>
 #include"pado.h"
 
+/**
+ * Method which calculates Padovan numbers iteratively
+ */
 int padocalc(int n)
 {
     if (n < 3) {

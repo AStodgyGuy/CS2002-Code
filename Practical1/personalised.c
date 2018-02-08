@@ -3,6 +3,9 @@
 
 int first, second, third;
 
+/**
+ * Method which calculates a Padovan numbers from 3 user defined initial numbers
+ */
 int padocalc(int n)
 {
     if (n == 0) {

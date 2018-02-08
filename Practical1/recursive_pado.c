@@ -1,5 +1,8 @@
 #include "pado.h"
 
+/**
+ * A method which calculates Padovan numbers recursively
+ */
 int padocalc(int n) 
 {
     if (n < 3) {

@@ -3,7 +3,7 @@
 #include<stdbool.h>
 #include"pado.h"
 
-
+extern int padocalc(int i);
 bool is_overflow(long long value);
 bool get_valid_starting_inputs();
 bool get_valid_length_input();
@@ -24,7 +24,7 @@ int main(void)
                     list[i] = padocalc(i);
                 }
                 //print all numbers
-                if (sizeof(list) > 0) {
+                if (num > 0) {
                     printf("[");
                     for(int j = 0; j < num-1; j++) {
                         printf("%d, ",list[j]);
