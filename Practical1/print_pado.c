@@ -23,8 +23,8 @@ int main()
         }
         printf("%d", list[num-1]);
         printf("]\n");
-    } else {
-        printf("[]");
+    } else if (num == 0) {
+        printf("[]\n");
     }
 
     return 0;
