@@ -1,6 +1,6 @@
-	.text
-	.file	"sort.c"
-	.globl	mergesort
+	.text										
+	.file	"sort.c"							
+	.globl	mergesort							
 	.p2align	4, 0x90
 	.type	mergesort,@function
 mergesort:
@@ -30,69 +30,69 @@ mergesort:
 	callq	sortsub
 	addq	$48, %rsp
 	popq	%rbp
-	retq
+	retq								
 .Lfunc_end0:
 	.size	mergesort, .Lfunc_end0-mergesort
 	.cfi_endproc
 
 	.p2align	4, 0x90
 	.type	sortsub,@function
-sortsub:
+sortsub:								# Name of the function
 	.cfi_startproc
-	pushq	%rbp
+	pushq	%rbp						# Setup new stack frame for sortsub function and put it into the rbp register
 .Lcfi3:
 	.cfi_def_cfa_offset 16
 .Lcfi4:
 	.cfi_offset %rbp, -16
-	movq	%rsp, %rbp
+	movq	%rsp, %rbp					# Move the stack pointer to rbp where rbp represents the sortsub function
 .Lcfi5:
 	.cfi_def_cfa_register %rbp
-	subq	$64, %rsp
-	movq	%rdi, -8(%rbp)
-	movq	%rsi, -16(%rbp)
-	movq	%rdx, -24(%rbp)
-	movq	%rcx, -32(%rbp)
-	movq	%r8, -40(%rbp)
-	movq	-32(%rbp), %rcx
-	subq	-24(%rbp), %rcx
-	cmpq	$1, %rcx
-	jle	.LBB1_2
-	movl	$2, %eax
-	movl	%eax, %ecx
-	movq	-24(%rbp), %rdx
-	movq	-32(%rbp), %rsi
-	subq	-24(%rbp), %rsi
-	movq	%rsi, %rax
-	movq	%rdx, -56(%rbp)
-	cqto
-	idivq	%rcx
-	movq	-56(%rbp), %rcx
-	addq	%rax, %rcx
-	movq	%rcx, -48(%rbp)
-	movq	-8(%rbp), %rdi
-	movq	-16(%rbp), %rsi
-	movq	-24(%rbp), %rax
-	movq	-48(%rbp), %rcx
-	movq	-40(%rbp), %r8
-	movq	%rax, %rdx
-	callq	sortsub
-	movq	-8(%rbp), %rdi
-	movq	-16(%rbp), %rsi
-	movq	-48(%rbp), %rdx
-	movq	-32(%rbp), %rcx
-	movq	-40(%rbp), %r8
-	callq	sortsub
-	movq	-8(%rbp), %rdi
-	movq	-16(%rbp), %rsi
-	movq	-24(%rbp), %rdx
-	movq	-48(%rbp), %rcx
-	movq	-32(%rbp), %r8
-	movq	-40(%rbp), %r9
-	callq	merge
-.LBB1_2:
-	addq	$64, %rsp
-	popq	%rbp
-	retq
+	subq	$64, %rsp					# Allocate 64 bytes on the stack
+	movq	%rdi, -8(%rbp)				# Argument for the sortsub function, varaible stored in rdi has been pushed into the stack and is at position -8 bytes relative to stack pointer, this is variable 'arr'
+	movq	%rsi, -16(%rbp)				# Argument for the sortsub function, varaible stored in rsi has been pushed into the stack and is at position -16 bytes relative to stack pointer, this is varaible 'size'
+	movq	%rdx, -24(%rbp)				# Argument for the sortsub function, varaible stored in rdx has been pushed into the stack and is at position -24 bytes relative to stack pointer, this is variable 'left'
+	movq	%rcx, -32(%rbp)				# Argument for the sortsub function, varaible stored in rcx has been pushed into the stack and is at position -32 bytes relative to stack pointer, this is variable 'right'
+	movq	%r8, -40(%rbp)				# Argument for the sortsub function, varaible stored in r8 has been pushed into the stack and is at position -40 bytes relative to stack pointer, this is variable 'comp'
+	movq	-32(%rbp), %rcx				# Move the value found at position -32 from the stack pointer to register rcx, in code this is the variable 'right'
+	subq	-24(%rbp), %rcx				# Subtract the value at position -24 from the stack pointer from the value in rcx, in code this is the operation 'right - left', store the result in rcx
+	cmpq	$1, %rcx					# Compare the constant '1' with the value in rcx, in code this is 'right - left > 1'
+	jle	.LBB1_2							# Jump to LBB1_2 if the value held in rcx is less than or equal to 1, in code this is the 'if' statement
+	movl	$2, %eax					# Move the constant '2' into register eax
+	movl	%eax, %ecx					# Move the value in eax to register ecx, ecx and rcx are the same register
+	movq	-24(%rbp), %rdx				# Move the value held in -24 locaions relative to rbp into reigster rdx, this is the variable 'left'
+	movq	-32(%rbp), %rsi				# Move the value held in -32 locations relative to rbp into register rsi, this is the variable 'right'
+	subq	-24(%rbp), %rsi				# Subtract the value held in -24 locaions relative to rbp from rsi - "right-left"
+	movq	%rsi, %rax					# Move the result into the register rax, this will become the quotient of our division further ahead
+	movq	%rdx, -56(%rbp)				# Move the variable held in rdx and move it -56 bytes locations relative to rdp, this is done to 'free' up rdx, this moves the variable 'left' to -56 bytes of the stack pointer
+	cqto								# cqto is an assembly keyword that converts quadword to octoword preparing the division ((right - left) / 2) incase the division becomes a floating point number
+	idivq	%rcx						# idivq divides rax by rcx and stores the remainder in rdx with the result of the division into rax
+	movq	-56(%rbp), %rcx				# Move the value held in -56 bytes from the stack pointer to rcx, this holds the variable 'left'
+	addq	%rax, %rcx					# Add value held in rcx to the value held in rcx. This is left (rcx) + (right - left) / 2 (rax). Store the result in rcx
+	movq	%rcx, -48(%rbp)				# Move the result of that value into a location -48 blocks away from rbp
+	movq	-8(%rbp), %rdi				# Move the variable from -8 bytes locations relative to rbp to rdi, this is variable 'arr'
+	movq	-16(%rbp), %rsi				# Move the variable from -16 bytes locations relative to rbp to rsi, this is variable 'size'
+	movq	-24(%rbp), %rax				# Move the variable from -24 bytes locations relative to rbp to rax, this is variable 'left'
+	movq	-48(%rbp), %rcx				# Move the variable from -32 bytes locations relative to rbp to rcx, this is variable 'mid'
+	movq	-40(%rbp), %r8				# Move the variable from -40 bytes locations relative to rbp to r8, this is variable 'comp'
+	movq	%rax, %rdx					# Unoptimised move statement, rax contains the variable 'left' and it is moved to rdx, this isn't needed
+	callq	sortsub						# Call the method sortsub
+	movq	-8(%rbp), %rdi				# Move the variable from -8 bytes locations relative to rbp to rdi, this is variable 'arr'
+	movq	-16(%rbp), %rsi				# Move the variable from -16 bytes locations relative to rbp to rsi, this is variable 'size'
+	movq	-48(%rbp), %rdx				# Move the variable from -48 bytes locations relative to rbp to rax, this is variable 'mid'
+	movq	-32(%rbp), %rcx				# Move the variable from -32 bytes locations relative to rbp to rcx, this is variable 'right'
+	movq	-40(%rbp), %r8				# Move the variable from -40 bytes locations relative to rbp to r8, this is variable 'comp'
+	callq	sortsub						# Call the method sortsub
+	movq	-8(%rbp), %rdi				# Move the variable from -8 bytes locations relative to rbp to rdi, this is variable 'arr'
+	movq	-16(%rbp), %rsi				# Move the variable from -16 bytes locations relative to rbp to rsi, this is variable 'size'
+	movq	-24(%rbp), %rdx				# Move the variable from -24 bytes locations relative to rbp to rdx, this is variable 'left'
+	movq	-48(%rbp), %rcx				# Move the variable from -32 bytes locations relative to rbp to rcx, this is variable 'mid'
+	movq	-32(%rbp), %r8				# Move the variable from -40 bytes locations relative to rbp to r8, this is variable 'right'
+	movq	-40(%rbp), %r9				# Move the variable from -48 bytes locations relative to rbp to r9, this is variable 'comp'
+	callq	merge						# Call the method merge
+.LBB1_2:								# jle will jump here if 'right - left <= 1'
+	addq	$64, %rsp					# Give back 64 bytes of the stack space since there is no condition for else in code
+	popq	%rbp						# Pop all the elements in the stack queue
+	retq								# Since all elements of the stack have been popped, the stack pointer now points to the top of the stack, retq returns the address of the top of the stack
 .Lfunc_end1:
 	.size	sortsub, .Lfunc_end1-sortsub
 	.cfi_endproc

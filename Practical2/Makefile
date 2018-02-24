@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -c -Wall -Wextra -O0
+CFLAGS = -c -Wall -Wextra -g3
 AFLAGS = -c -S -Wall -Wextra -fno-verbose-asm
 LFLAGS = -Wall -Wextra
 

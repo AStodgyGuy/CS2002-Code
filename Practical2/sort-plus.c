@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-
 #include "stack.h"
+#include <stdio.h>
 
 /* Assuming two consecutive subarrays are sorted, 
  * merge them into one sorted subarray.
@@ -43,8 +43,9 @@ static void sortsub(void* arr, long size, long left, long right,
 		sortsub(arr, size, mid, right, comp);
 		merge(arr, size, left, mid, right, comp);
 	}
-	if (right - left == 3 && left > 0 && right < 10)
+	if (right - left == 3 && left > 0 && right < 10) {
 		print_stack();
+	}
 }
 
 /* Sort array.

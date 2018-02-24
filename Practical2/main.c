@@ -21,6 +21,6 @@ int main(void) {
 	long len = sizeof(array) / size;
 	mergesort(array, size, len, &comp_long);
 	for (int i = 0; i < len; i++)
-		printf("%li\n", array[i]);
+		//printf("%li\n", array[i]);
 	return 0;
 }
