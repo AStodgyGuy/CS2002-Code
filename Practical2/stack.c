@@ -19,54 +19,56 @@ void print_stack() {
     asm("movq (%1), %0;" : "=r"(second_rbp) : "r"(first_rbp));
     printf("second call absolute address: %p\n", (void*)second_rbp);
 
-    //new line to separate
-    printf("\n");
-
-    //Calculate size of frame
-    long size_of_first_frame = first_rbp - current_rbp;
-    long size_of_second_frame = second_rbp - first_rbp;
-    //16 bytes taken off due to offset
-    size_of_first_frame = size_of_first_frame - 16; 
-    //size of frame by size of a byte
-    long number_of_instructions = size_of_first_frame / 8;
-
-    //subtracting offset from first rbp
-    first_rbp = first_rbp - 16;
-
-    // for loop to print out each instruction in second_rbp
-    long volatile result;    //what is at the memory address
-    long result_at = -size_of_first_frame; //where the memory address is
-    printf("Total number of instructions for first stack frame: %ld\n", number_of_instructions);
-    printf("Address                                 Relative Offset          Value\n");
-    for (int i = 0; i < number_of_instructions; i++) {
-        asm("movq (%1), %0;" : "=r"(result) : "r"(first_rbp));
-        printf("%p                             %ld                     %ld\n", (void*)first_rbp, result_at, result);
-        first_rbp = first_rbp - 8;    //minus 8 to traverse the memory address
-        result_at = result_at + 8;      //plus 8 to show which address is being shown
-    }
+    //calller of caller of caller of print_stack
+    long third_rbp;
+    asm("movq (%1), %0;" : "=r"(third_rbp) : "r"(second_rbp));
+    printf("third call absolute address: %p\n", (void*)third_rbp);
 
     //new line to separate
     printf("\n");
 
-    //16 bytes taken off due to offset
-    size_of_second_frame = size_of_second_frame - 16; 
-    //size of frame by size of a byte
-    number_of_instructions = size_of_second_frame / 8;
+    //number of frames to print
+    int number_of_frames = 3;
+    //Calculate size of each frame
+    long size_of_frame, number_of_instructions, working_rbp;
+    //for loop to print out three stack frames
+    for (int i = 0; i < number_of_frames; i++) {
+        //first frame
+        if (i == 0) {
+            working_rbp = first_rbp;
+            size_of_frame = first_rbp - current_rbp;
+        //second frame
+        } else if (i == 1) {
+            working_rbp = second_rbp;
+            size_of_frame = second_rbp - first_rbp;
+        //third frame
+        } else if (i == 2) {
+            working_rbp = third_rbp;
+            size_of_frame = third_rbp - second_rbp;
+        }
+        //subtracting top padding
+        working_rbp = working_rbp - sizeof(working_rbp);
+        //subtracting bottom padding
+        size_of_frame = size_of_frame - sizeof(working_rbp);
+        //size of frame divded by size of a byte to get number of instructions
+        number_of_instructions = size_of_frame / sizeof(working_rbp);
 
-    //subtracting offset from second rbp
-    second_rbp = second_rbp - 16;
-
-    // for loop to print out each instruction in second_rbp
-    result = 0;
-    result_at = -size_of_second_frame; //where the memory address is
-    printf("Total number of instructions for second stack frame: %ld\n", number_of_instructions);
-    printf("Address                                 Relative Offset          Value\n");
-    for (int i = 0; i < number_of_instructions; i++) {
-        asm("movq (%1), %0;" : "=r"(result) : "r"(second_rbp));
-        printf("%p                             %ld                     %ld\n", (void*)second_rbp, result_at, result);
-        second_rbp = second_rbp - 8;    //minus 8 to traverse the memory address
-        result_at = result_at + 8;      //plus 8 to show which address is being shown
-    }
-
+        //print
+        printf("Address\t\tRelative Offset\t\tValue\n");
+        long result;    //what is at the memory address
+        long result_at = -sizeof(working_rbp); //where the memory address is
+        for (int j = 0; j < number_of_instructions; j++) {
+            asm("movq (%1), %0;" : "=r"(result) : "r"(working_rbp));
+            //pointers at these locations
+            if (result_at == -8 || result_at == -40) {
+                printf("%p\t\t%ld\t\t%p\n", (void*)working_rbp, result_at, (void*)result);
+            } else {
+                printf("%p\t\t%ld\t\t%ld\n", (void*)working_rbp, result_at, result);
+            }
+            working_rbp = working_rbp - sizeof(working_rbp);    //minus 8 to traverse the memory address
+            result_at = result_at - sizeof(working_rbp);      //plus 8 to show which address is being shown
+        }
+        //new line to separate
+        printf("\n");
+    }    
 }
-
