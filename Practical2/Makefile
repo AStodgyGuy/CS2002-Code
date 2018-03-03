@@ -1,11 +1,11 @@
 CC = clang
-CFLAGS = -c -Wall -Wextra -g3
+CFLAGS = -c -Wall -Wextra -O0 -g3
 AFLAGS = -c -S -Wall -Wextra -fno-verbose-asm
 LFLAGS = -Wall -Wextra
 
-all: main main-plus sort0.s sort1.s sort2.s sort3.s sort-plus.s
+all: main main-plus sort0.s sort1.s sort2.s sort3.s sort-plus.s sort-space.s sort-mips.s
 clean:
-	rm -f main main-plus *.o sort0.s sort1.s sort2.s sort3.s sort-plus.s
+	rm -f main main-plus *.o sort0.s sort1.s sort2.s sort3.s sort-plus.s sort-space.s sort-mips.s
 
 main: main.o sort.o
 	${CC} ${LFLAGS} main.o sort.o -o main
@@ -39,3 +39,9 @@ sort3.s: sort.c
 
 sort-plus.s: sort-plus.c
 	${CC} ${AFLAGS} -O0 sort-plus.c -o sort-plus.s
+
+sort-space.s: sort.c
+	${CC} ${AFLAGS} -Os sort.c -o sort-space.s
+
+sort-mips.s: sort.c
+	${CC} ${AFLAGS} -target mips sort.c -o sort-mips.s

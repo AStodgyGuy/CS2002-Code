@@ -37,21 +37,18 @@ void print_stack() {
             working_rbp = third_rbp;
             size_of_frame = third_rbp - second_rbp;
         }
-        //subtracting top padding
-        working_rbp = working_rbp - sizeof(working_rbp);
-        //subtracting bottom padding
-        size_of_frame = size_of_frame - sizeof(working_rbp);
+        
         //size of frame divded by size of a byte to get number of instructions
         number_of_instructions = size_of_frame / sizeof(working_rbp);
 
         //print
         printf("Address\t\t Relative Offset      Value\n");
         long result;    //what is at the memory address
-        long result_at = -sizeof(working_rbp); //where the memory address is
+        long result_at = 0; //where the memory address is relative to rbp
         for (int j = 0; j < number_of_instructions; j++) {
             asm("movq (%1), %0;" : "=r"(result) : "r"(working_rbp));
-            //pointers at these locations
-            if (result_at == -8 || result_at == -40 || result_at == -72) {
+            //pointers at locations -8, -40 and -72
+            if (result_at == 0 || result_at == -8 || result_at == -40 || result_at == -72) {
                 printf("%p\t|\t%ld\t|\t%p\n", (void*)working_rbp, result_at, (void*)result);
             } else {
                 printf("%p\t|\t%ld\t|\t%ld\n", (void*)working_rbp, result_at, result);
