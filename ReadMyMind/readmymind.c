@@ -36,22 +36,21 @@ void printDeck(Deck* deck, int rows, int columns) {
     }
 }
 
-//method to get user input
+//method to get user input and input validation
 int getUserInput() {
     int user_input;
-    printf("\nThink of a card displayed above, enter which column it is in: ");
-    while (1) {
-        if (scanf("%d", &user_input) != 1) { 
-            printf("Invalid input! Enter which column it is in: ");
-        } else {
-            if (user_input < 1 || user_input > 3) {
-                printf("Invalid input! Enter which column it is in: ");
-            } else {
-                return user_input;
+    char initial_input[100];
+    printf("\nThink of a card displayed above, enter which column it is in or enter 0 to exit: ");
+    while(1) {
+        scanf("%s", initial_input);
+        if (sscanf(initial_input,"%d", &user_input)) {
+            if (user_input == 0 || user_input == 1 || user_input == 2 || user_input == 3) {
+                break;
             }
         }
+        printf("Invalid input! Enter which column it is in: ");
     }
-        
+    return user_input;   
 }
 
 //method to rotate decks
@@ -59,19 +58,21 @@ Deck* combineDecks(Deck* deck, Deck* deck_to_middle, Deck* first_deck_to_rotate,
     int i = 0;
     int size_of_deck = getSize(first_deck_to_rotate);
     
+    //dequeue all elements in column deck and enqueue it into the main deck
     while (i < size_of_deck) {
         enqueue(dequeue(first_deck_to_rotate), deck);
         i++;
     }
 
     i = 0;
+    //dequeue all elements in column deck and enqueue it into the main deck
     while (i < size_of_deck) {
         enqueue(dequeue(deck_to_middle), deck);
         i++;
     }
 
-    
     i = 0;
+    //dequeue all elements in column deck and enqueue it into the main deck
     while (i < size_of_deck) {
         enqueue(dequeue(second_deck_to_rotate), deck);
         i++;
@@ -169,6 +170,12 @@ int main() {
     for (int i = 0; i < no_of_repitions; i++) {
         //get input
         user_input = getUserInput();
+        if (user_input == 0) {
+            //free everything
+            empty(deck_pointer);
+            free(deck_pointer);
+            return 0;
+        }
         //collect deck
         deck_pointer = collectDeck(deck_pointer, user_input);
         //print deck
@@ -184,9 +191,6 @@ int main() {
     //free everything
     empty(deck_pointer);
     free(deck_pointer);
-    
+
     return 0;
 }
-
-
-
