@@ -37,7 +37,7 @@ void printDeck(Deck* deck, int rows, int columns) {
 }
 
 //method to get user input and input validation
-int getUserInput() {
+int getFirstInput() {
     int user_input;
     char initial_input[100];
     printf("\nThink of a card displayed above, enter which column it is in or enter 0 to exit: ");
@@ -145,6 +145,29 @@ Deck* collectDeck(Deck* deck, int user_input) {
     return deck;
 }
 
+int getSecondInput() {
+    int result = 0;
+    char user_input;
+    char initial_input[100];
+    printf("Do you want to play again? (y/n) ");
+    while(1) {
+        scanf("%s", initial_input);
+        if (sscanf(initial_input,"%c", &user_input)) {
+            if (user_input == 'y') {
+                printf("\n");
+                result = 1;
+                break;
+            } else if (user_input == 'n') {
+                result = 0;
+                break;
+            }
+        }
+        printf("Invalid input! Do you want to play again? (y/n) ");
+    }
+    return result;   
+
+}
+
 //main method
 int main() {
 
@@ -156,42 +179,46 @@ int main() {
     int no_of_repitions = 3;
     int prediction = no_of_cards / 2;
 
-    //create deck of 21 random cards
-    Deck* deck_pointer = malloc(sizeof(Deck));
-    deck_pointer->front = NULL;
-    deck_pointer->rear = NULL;
-    deck_pointer->size = 0;
-    deck_pointer = createDeck(deck_pointer, no_of_cards, no_of_suits, no_of_ranks);
+    while (1) {
+        //create deck of 21 random cards
+        Deck* deck_pointer = malloc(sizeof(Deck));
+        deck_pointer->front = NULL;
+        deck_pointer->rear = NULL;
+        deck_pointer->size = 0;
+        deck_pointer = createDeck(deck_pointer, no_of_cards, no_of_suits, no_of_ranks);
 
-    //display the cards
-    printDeck(deck_pointer, no_of_rows, no_of_columns);
-    int user_input;
-    //the trick
-    for (int i = 0; i < no_of_repitions; i++) {
-        //get input
-        user_input = getUserInput();
-        if (user_input == 0) {
-            //free everything
-            printf("Exiting the program...\n");
-            empty(deck_pointer);
-            free(deck_pointer);
+        //display the cards
+        printDeck(deck_pointer, no_of_rows, no_of_columns);
+        int user_input;
+        //the trick
+        for (int i = 0; i < no_of_repitions; i++) {
+            //get input
+            user_input = getFirstInput();
+            if (user_input == 0) {
+                //free everything
+                printf("Exiting the program...\n");
+                empty(deck_pointer);
+                free(deck_pointer);
+                return 0;
+            }
+            //collect deck
+            deck_pointer = collectDeck(deck_pointer, user_input);
+            //print deck
+            printDeck(deck_pointer, no_of_rows, no_of_columns);
+        }
+
+        //make prediction
+        Card* predicted_card = getCard(deck_pointer, prediction);
+        printf("I predict your card to be: ");
+        printCard(predicted_card);
+        printf("\n------------------------\n");
+
+        //free everything
+        empty(deck_pointer);
+        free(deck_pointer);
+        int second_input = getSecondInput();
+        if (second_input == 0) {
             return 0;
         }
-        //collect deck
-        deck_pointer = collectDeck(deck_pointer, user_input);
-        //print deck
-        printDeck(deck_pointer, no_of_rows, no_of_columns);
     }
-
-    //make prediction
-    Card* predicted_card = getCard(deck_pointer, prediction);
-    printf("I predict your card to be: ");
-    printCard(predicted_card);
-    printf("\n");
-
-    //free everything
-    empty(deck_pointer);
-    free(deck_pointer);
-
-    return 0;
 }
