@@ -70,7 +70,8 @@ int getUserNumber() {
 }
 
 //method which converts a number into base three
-void convertToBaseThree(int* base_three_array, int user_number) {
+int* convertToBaseThree(int user_number) {
+    static int base_three_array[3];
     int index = 0;
     int base = 3;
     while (user_number != 0) {
@@ -78,6 +79,8 @@ void convertToBaseThree(int* base_three_array, int user_number) {
         user_number = user_number / base;
         ++index;
     }
+
+    return base_three_array;
 }
 
 
@@ -110,7 +113,6 @@ Deck* combineDecks(Deck* deck, Deck* top_deck, Deck* middle_deck, Deck* bottom_d
 }
 
 Deck* switchDecks(int position, Deck* deck, Deck* deck_to_be_switched, Deck* other_deck, Deck* deck_other) {
-    
     switch (position) {
         //put user selected deck to top of pile
         case 0:
@@ -131,7 +133,7 @@ Deck* switchDecks(int position, Deck* deck, Deck* deck_to_be_switched, Deck* oth
 
 //method to position the decks
 Deck* positionDecks(int user_input, int position, Deck* deck, Deck* deck_one, Deck* deck_two, Deck* deck_three) {
-    
+
     //get the user selected deck to switch
     switch (user_input) {
         case 1:
@@ -206,13 +208,13 @@ int main() {
     int no_of_ranks = 13;
     int no_of_repitions = 3;
     int user_number, user_input;
-    int base_three_array[3]; 
+    int *pointer_to_base_three; 
 
     //pick a number between 0 and 27
     user_number = getUserNumber();
 
     //convert number into base three
-    convertToBaseThree(base_three_array, user_number);
+    pointer_to_base_three = convertToBaseThree(user_number);
 
     //create deck of 27 random cards
     Deck* deck_pointer = malloc(sizeof(Deck));
@@ -236,7 +238,7 @@ int main() {
             return 0;
         }
         //collect deck
-        deck_pointer = collectDeck(deck_pointer, user_input, base_three_array[i]);
+        deck_pointer = collectDeck(deck_pointer, user_input, *(pointer_to_base_three + i));
         //print deck
         printDeck(deck_pointer, no_of_rows, no_of_columns);
     }
