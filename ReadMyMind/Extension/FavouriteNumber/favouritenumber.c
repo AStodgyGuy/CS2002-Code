@@ -54,19 +54,19 @@ int getUserInput() {
 
 //method to get a number from the user between 0 and 27
 int getUserNumber() {
-    int user_input;
+    int user_number;
     char initial_input[100];
-    printf("Enter a number between 0 and 27: ");
+    printf("Enter a number between 0 and 27 or enter 0 to exit: ");
     while(1) {
         scanf("%s", initial_input);
-        if (sscanf(initial_input,"%d", &user_input)) {
-            if (user_input > 0 && user_input < 27) {
+        if (sscanf(initial_input,"%d", &user_number)) {
+            if (user_number >= 0 && user_number < 27) {
                 break;
             }
         }
-        printf("Invalid input! Enter a number between 0 and 27: ");
+        printf("Invalid input! Enter a number between 0 and 27 or enter 0 to exit: ");
     }
-    return user_input;   
+    return user_number;   
 }
 
 //method which converts a number into base three
@@ -212,6 +212,11 @@ int main() {
 
     //pick a number between 0 and 27
     user_number = getUserNumber();
+    if (user_number == 0) {
+            //free everything
+            printf("Exiting the program...\n");
+            return 0;
+    }
 
     //convert number into base three
     pointer_to_base_three = convertToBaseThree(user_number);
