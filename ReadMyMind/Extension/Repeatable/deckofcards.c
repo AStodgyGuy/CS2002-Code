@@ -32,62 +32,10 @@ Card* dequeue(Deck* deck) {
     return temp;
 }
 
-//print out ranks
-void printRank(int rank) {
-    switch (rank) {
-        case 12:
-            printf("K");
-            break;
-        case 11: 
-            printf("Q");
-            break;
-        case 10:
-            printf("J");
-            break;
-        case 9:
-            printf("10");
-            break;
-        case 0:
-            printf("A");
-            break;
-        default:
-            printf("%d", rank + 1);
-            break;
-    }
-}
-
-//print out suit
-void printSuit(int suit) {
-    switch (suit) {
-        case 0:
-            printf("C");
-            break;
-        case 1:
-            printf("S");
-            break;
-        case 2:
-            printf("H");
-            break;
-        default:
-            printf("D");
-            break;
-    }
-}
-
-//print card
-void printCard(Card* c) {
-    printRank(c->rank);
-    printSuit(c->suit);
-}
-
-int getSize(Deck* deck) {
-    return deck->size;
-}
-
 //contains method
 int queueContains(Card* c, Deck* deck) {
     Card* current_card = deck->front;
-    int size = getSize(deck);
+    int size = deck->size;
     if (size == 0) {
         return false;
     }
@@ -103,7 +51,7 @@ int queueContains(Card* c, Deck* deck) {
 
 //empty method
 void empty(Deck* deck) {
-    int deckSize = getSize(deck);
+    int deckSize = deck->size;
     if (deckSize == 0) {
         return;
     }

@@ -21,6 +21,54 @@ Deck* createDeck(Deck* deck, int no_of_cards, int suits, int ranks) {
     return deck;
 }
 
+//print out ranks
+void printRank(int rank) {
+    switch (rank) {
+        case 12:
+            printf("K");
+            break;
+        case 11: 
+            printf("Q");
+            break;
+        case 10:
+            printf("J");
+            break;
+        case 9:
+            printf("10");
+            break;
+        case 0:
+            printf("A");
+            break;
+        default:
+            printf("%d", rank + 1);
+            break;
+    }
+}
+
+//print out suit
+void printSuit(int suit) {
+    switch (suit) {
+        case 0:
+            printf("♣");
+            break;
+        case 1:
+            printf("♠");
+            break;
+        case 2:
+            printf("♥");
+            break;
+        default:
+            printf("♦");
+            break;
+    }
+}
+
+//print card
+void printCard(Card* c) {
+    printRank(c->rank);
+    printSuit(c->suit);
+}
+
 //method to print contents of deck
 void printDeck(Deck* deck, int rows, int columns) {
     Card* temp = deck->front;
@@ -87,7 +135,7 @@ int* convertToBaseThree(int user_number) {
 //method to combine decks
 Deck* combineDecks(Deck* deck, Deck* top_deck, Deck* middle_deck, Deck* bottom_deck) {
     int i = 0;
-    int size_of_deck = getSize(top_deck);
+    int size_of_deck = top_deck->size;
     
     //dequeue all elements in column deck and enqueue it into the main deck
     while (i < size_of_deck) {
@@ -164,7 +212,7 @@ Deck* collectDeck(Deck* deck, int user_input, int position) {
     deck_three->front = NULL;
     deck_three->rear = NULL;
 
-    int no_of_cards = getSize(deck);
+    int no_of_cards = deck->size;
 
     //go through every card in deck
     for (int i = 0; i < no_of_cards; i++) {

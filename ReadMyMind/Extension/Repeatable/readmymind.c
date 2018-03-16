@@ -22,6 +22,54 @@ Deck* createDeck(Deck* deck, int no_of_cards, int suits, int ranks) {
     return deck;
 }
 
+//print out ranks
+void printRank(int rank) {
+    switch (rank) {
+        case 12:
+            printf("K");
+            break;
+        case 11: 
+            printf("Q");
+            break;
+        case 10:
+            printf("J");
+            break;
+        case 9:
+            printf("10");
+            break;
+        case 0:
+            printf("A");
+            break;
+        default:
+            printf("%d", rank + 1);
+            break;
+    }
+}
+
+//print out suit
+void printSuit(int suit) {
+    switch (suit) {
+        case 0:
+            printf("♣");
+            break;
+        case 1:
+            printf("♠");
+            break;
+        case 2:
+            printf("♥");
+            break;
+        default:
+            printf("♦");
+            break;
+    }
+}
+
+//print card
+void printCard(Card* c) {
+    printRank(c->rank);
+    printSuit(c->suit);
+}
+
 //method to print contents of deck
 void printDeck(Deck* deck, int rows, int columns) {
     Card* temp = deck->front;
@@ -56,7 +104,7 @@ int getFirstInput() {
 //method to rotate decks
 Deck* combineDecks(Deck* deck, Deck* deck_to_middle, Deck* first_deck_to_rotate, Deck* second_deck_to_rotate) {
     int i = 0;
-    int size_of_deck = getSize(first_deck_to_rotate);
+    int size_of_deck = first_deck_to_rotate->size;
     
     //dequeue all elements in column deck and enqueue it into the main deck
     while (i < size_of_deck) {
@@ -95,7 +143,7 @@ Deck* collectDeck(Deck* deck, int user_input) {
     deck_three->front = NULL;
     deck_three->rear = NULL;
 
-    int no_of_cards = getSize(deck);
+    int no_of_cards = deck->size;
 
     //go through every card in deck
     for (int i = 0; i < no_of_cards; i++) {
@@ -179,12 +227,14 @@ int main() {
     int no_of_repitions = 3;
     int prediction = no_of_cards / 2;
 
+    //Allocate memory for deck
+    Deck* deck_pointer = malloc(sizeof(Deck));
+    deck_pointer->front = NULL;
+    deck_pointer->rear = NULL;
+    deck_pointer->size = 0;
+
     while (1) {
-        //create deck of 21 random cards
-        Deck* deck_pointer = malloc(sizeof(Deck));
-        deck_pointer->front = NULL;
-        deck_pointer->rear = NULL;
-        deck_pointer->size = 0;
+        //fill the deck with 21 random cards
         deck_pointer = createDeck(deck_pointer, no_of_cards, no_of_suits, no_of_ranks);
 
         //display the cards
@@ -213,12 +263,15 @@ int main() {
         printCard(predicted_card);
         printf("\n------------------------\n");
 
-        //free everything
-        empty(deck_pointer);
-        free(deck_pointer);
+        //check if user wants to play again
         int second_input = getSecondInput();
         if (second_input == 0) {
+            //free everything
+            empty(deck_pointer);
+            free(deck_pointer);
             return 0;
+        } else {
+            empty(deck_pointer);
         }
     }
 }
