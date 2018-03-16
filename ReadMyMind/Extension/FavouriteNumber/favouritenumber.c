@@ -95,7 +95,7 @@ int getUserInput() {
                 break;
             }
         }
-        printf("Invalid input! Enter which column it is in: ");
+        printf("Invalid input! Enter which column it is in or 0 to exit: ");
     }
     return user_input;   
 }
