@@ -1,0 +1,12 @@
+CC = clang
+FLAGS = -Wall -Wextra
+
+all: 
+
+stage1:
+
+stage2:
+
+stage3:
+
+clean:
