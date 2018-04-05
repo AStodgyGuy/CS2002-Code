@@ -1,12 +1,7 @@
-CC = clang
+CC = gcc -std=c99
 FLAGS = -Wall -Wextra
 
-all: 
-
-stage1:
-
-stage2:
-
-stage3:
+all: main.c readfile.h readfile.c
+	${CC} ${FLAGS} main.c readfile.c -o main
 
 clean:

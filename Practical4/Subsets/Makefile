@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 FLAGS = -Wall -Wextra -O0
 
 all: subsets
