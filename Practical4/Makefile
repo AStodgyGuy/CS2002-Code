@@ -1,7 +1,8 @@
 CC = gcc -std=c99
-FLAGS = -Wall -Wextra
+FLAGS = -Wall -Wextra -g3
 
-all: main.c readfile.h readfile.c
-	${CC} ${FLAGS} main.c readfile.c -o main
+circuits: main.c circuit.h circuit.c
+	${CC} ${FLAGS} main.c circuit.c -o circuits
 
 clean:
+	rm -rf circuits

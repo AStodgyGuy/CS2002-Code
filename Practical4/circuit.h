@@ -1,31 +1,56 @@
-/*
- * Typedef struct for a gate
- */
-typedef struct Gate {
-    char first_input_wire[50];
-    char second_input_wire[50];
-    char output_wire[50];
-    enum gate_type{NOT, AND, NAND, OR, NOR, XOR,EQ};
-} Gate;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 /**
  * Typedef struct for a wire
  */
 typedef struct Wire {
-    char name[50];
-    int value;
+    int current_value;
+    int previous_value;
+    char* name;
+    bool is_user_defined;
+    struct Wire* next;
 } Wire;
 
-/**
- * Typedef struct for a vertice
- * A vertice is a node in a graph
+/*
+ * Typedef struct for a gate
  */
-typedef struct Vertice {
-    union {
-        struct Gate gate;
-        struct Wire wire;
-    } node_type;
+typedef struct Gate {
+    Wire* input_one;
+    Wire* input_two;
+    Wire* output;
+    char* type;
+    struct Gate* next; 
+} Gate;
 
-    
-} Vertice;
+/**
+ * Typedef struct for a linked list of wires
+ */
+typedef struct WireList {
+    struct Wire* head;
+    struct Wire* tail;
+    int size;
+} WireList;
 
+/**
+ * Typedef struct for a linked list of gates
+ */
+typedef struct GateList {
+    struct Gate* head;
+    struct Gate* tail;
+    int size;
+} GateList;
+
+void addToWireList(Wire* wire_to_add, WireList* wirelist);
+bool checkIfWireExists(char* name, WireList* wirelist);
+void addToGateList(Gate* gate, GateList* gatelist);
+Wire* getWireLocation(char* wire_to_get, WireList* wirelist);
+void freeGateList(GateList* gatelist);
+void freeWireList(WireList* wirelist);
+void initialiseAllWiresToZero(WireList* wirelist);
+void initialiseDefaultWires(WireList* wirelist);
+void evaluateGates(GateList* gatelist);
+void updateWires(WireList* wirelist);
+int getNumberOfUserDefinedWires(WireList* wirelist);
