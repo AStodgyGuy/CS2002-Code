@@ -88,7 +88,6 @@ void processInputs(char* line, WireList* wirelist, GateList* gatelist, int no) {
     free(output_wire);
     free(gate_type);
     free(first_input_wire);
-    
 
 }
 
@@ -137,6 +136,33 @@ void processLine(char* line, WireList* wirelist, GateList* gatelist) {
         default:
             return;
     }
+}
+
+
+/*
+ * Method which process the file contents into structure
+ * that can be used to generate truth tables 
+ */
+void processFileLocation(FILE *file_ptr, WireList* wirelist, GateList* gatelist) {
+    char buf[1000];
+    //obtain line by line of each file
+    while (1) {
+        if (fgets(buf,1000, file_ptr) == NULL) break;
+        processLine(buf, wirelist, gatelist);
+    }
+}
+
+/*
+ * Method which reads a file from a file location
+ */
+void readFileLocation(char* file_location, WireList* wirelist, GateList* gatelist) {
+    FILE *file_ptr;
+    file_ptr = fopen(file_location,"r");
+    if (!file_ptr)
+        return;
+    processFileLocation(file_ptr, wirelist, gatelist);
+    fclose(file_ptr);
+    return;
 }
 
 /**
@@ -251,6 +277,62 @@ int checkStable(WireList* wirelist, int out_col, int out_row, int out_table[][ou
 }
 
 /**
+ * Method to write results to a file
+ */
+void writeResults(WireList* wirelist, int perm_col, int current_combin, int perm_array[][perm_col], char* output_path, int result) {
+    //open file
+    FILE* file  = fopen(output_path,"a");
+
+    //write headers for wires and out if there is an out wire
+    if (current_combin == 0) {
+        int temp = wirelist->size;
+        Wire* current_wire = wirelist->head;    
+        while(temp > 0) {
+            if (current_wire->is_in) {
+                fprintf(file, "%s ", current_wire->name);
+                fflush(file);
+            }
+            if (strcmp(current_wire->name, "out") == 0) {
+                fprintf(file, "out");
+                fflush(file);
+            }
+            --temp;
+            current_wire = current_wire->next;
+        }
+        //check if out exists
+        if (getWireLocation("out", wirelist) == NULL) {
+            fprintf(file, "out");
+            fflush(file);
+        }
+        fprintf(file, "\n");
+        fflush(file);
+        
+    }
+    //write out permutation
+    for (int i = 0; i < perm_col; ++i) {
+        fprintf(file, "%d ", perm_array[current_combin][i]);
+        fflush(file);
+    }
+
+    //write out stabilization result
+    switch (result) {
+        case 0:
+            fprintf(file, "0\n");
+            fflush(file);
+            break;
+        case 1:
+            fprintf(file, "1\n");
+            fflush(file);
+            break;
+        case 2:
+            fprintf(file, "?\n");
+            fflush(file);
+            break;
+    }
+    fclose(file);
+}
+
+/**
  * Method to print results
  */
 void printResults(WireList* wirelist, int perm_col, int current_combin, int perm_array[][perm_col], int result) {
@@ -260,18 +342,11 @@ void printResults(WireList* wirelist, int perm_col, int current_combin, int perm
         int temp = wirelist->size;
         Wire* current_wire = wirelist->head;    
         while(temp > 0) {
-            if (current_wire->is_in) {
+            if (current_wire->is_in || strcmp(current_wire->name, "out") == 0) {
                 printf("%s ", current_wire->name);
-            }
-            if (strcmp(current_wire->name, "out") == 0) {
-                printf("out");
             }
             --temp;
             current_wire = current_wire->next;
-        }
-        //check if out wire does not exist
-        if (getWireLocation("out", wirelist) == NULL) {
-            printf("out");
         }
         printf("\n");  
     }
@@ -298,7 +373,7 @@ void printResults(WireList* wirelist, int perm_col, int current_combin, int perm
 /**
  * Method to simulate circuit and produce output table
  */
-void simualteCircuit(WireList* wirelist, GateList* gatelist) {
+void simualteCircuit(WireList* wirelist, GateList* gatelist, char* output_path) {
     //circuit stability result
     int result;
 
@@ -341,7 +416,11 @@ void simualteCircuit(WireList* wirelist, GateList* gatelist) {
         //check whether output table is stable or not
         result = checkStable(wirelist, max_time, wirelist->size, out_table);
         //write to output path
-        printResults(wirelist, no_defined_wires, i, perm_array, result);
+        if (output_path == NULL) {
+            printResults(wirelist, no_defined_wires, i, perm_array, result);
+        } else {
+            writeResults(wirelist, no_defined_wires, i, perm_array, output_path, result);
+        }
     }
 }
 
@@ -369,7 +448,8 @@ void createDefaultWires(WireList* wirelist) {
 /**
  * Main method
  */
-int main() {
+int main(int argc, char *argv[])
+{
     //defining list of wires
     WireList* wirelist = malloc(sizeof(WireList));
     wirelist->head = NULL;
@@ -386,14 +466,30 @@ int main() {
     createDefaultWires(wirelist);
 
     //user passes input as stdin and will output using stdout
-    char s[200];
-    while(scanf("%[^\n]%*c",s)==1){
-        processLine(s, wirelist, gatelist);
+    if (argc == 1) {
+        char* output_path = NULL;
+        char s[200];
+        while(scanf("%[^\n]%*c",s)==1){
+            processLine(s, wirelist, gatelist);
+        }
+        simualteCircuit(wirelist, gatelist, output_path);
+    // user specifies both an input and output path
+    } else if (argc ==3) {
+        char* input_path = argv[1];
+        char* output_path = argv[2];
+        //evaluate all lines of the input.txt file as code
+        readFileLocation(input_path, wirelist, gatelist);
+        //run circuit with all possible combinations for user defined wires to generate stability table
+        //write results to output_path
+        simualteCircuit(wirelist, gatelist, output_path);
+
+    //input error
+    } else {
+        printf("%d\n", argc);
+        printf("Error! Program requires 2 .txt files as arguments\n");
+        printf("Run with ./circuits input.txt output.txt or with ./circuits < input.txt > output.txt\n");
+        return 0;
     }
-
-    //simulate the circuit
-    simualteCircuit(wirelist, gatelist);
-
     //free everything
     freeGateList(gatelist);
     freeWireList(wirelist);
