@@ -1,7 +1,7 @@
 CC = clang
 CFLAGS = -Wall -Wextra -g3
 
-main: my_otp.h process1.h process2.h
+all: my_otp.h process1.h process2.h
 	${CC} ${CFLAGS} my_otp.c process1.c process2.c -o my_otp
 
 process1: process1.h
